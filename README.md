@@ -1,5 +1,3 @@
-# ace_budget_ai
-
 # Ace Budget AI
 
 ## Overview

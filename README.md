@@ -38,9 +38,9 @@ Ace Budget AI is an intelligent budgeting assistant designed to help users track
 
 ## Technologies Used
 - **Frontend**: React, Tailwind CSS
-- **Backend**: Node.js, Express
-- **Database**: MongoDB
-- **AI & Analytics**: TensorFlow, OpenAI API
+- **Backend**: Node.js, Python Flask
+- **Database**: Firebase and MongoDB
+- **AI & Analytics**: Google Cloud Vision API or Tesseract.js, spaCy for spending categorization, TensorFlow or Prophet for forecasting, OpenAI API, Huggingface
 
 ## Contributing
 We welcome contributions! Follow these steps:

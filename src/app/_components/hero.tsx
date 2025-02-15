@@ -29,28 +29,7 @@ function Hero() {
                     />
                 </ContainerScroll>
             </div>
-            <div className="flex flex-col items-center gap-4 py-20">
-                <p className="text-center px-4 text-gray-700 dark:text-gray-300">
-                    We are a non-profit organization that provides financial advice to students. We are
-                    independent and unbiased. We generate revenue through affiliate marketing from
-                    third-party companies.
-                </p>
-                <a
-                    className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-                    href="https://www.kickstarter.com/projects/acebudgetai/ace-budget-ai-student-finance-advisor"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Image
-                        className="dark:invert"
-                        src="/kickstarter.svg"
-                        alt="Kickstarter"
-                        width={20}
-                        height={20}
-                    />
-                    Support us on Kickstarter
-                </a>
-            </div>
+
         </section>
     );
 }

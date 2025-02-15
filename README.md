@@ -49,10 +49,24 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Technologies Used
-- **Frontend**: React, Tailwind CSS
-- **Backend**: Node.js, Express
-- **Database**: MongoDB
-- **AI & Analytics**: TensorFlow, OpenAI API
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Backend**: Node.js, Python Flask
+- **Database**: Firebase and MongoDB
+- **AI & Analytics**: Google Cloud Vision API or Tesseract.js, spaCy for spending categorization, TensorFlow or Prophet for forecasting, OpenAI API, Hugging Face
+
+## Learn More
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ## Contributing
 We welcome contributions! Follow these steps:

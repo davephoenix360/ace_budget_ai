@@ -16,7 +16,7 @@
     "motion": "^12.4.3",
     "next": "15.1.7",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
     "@clerk/nextjs": "^6.11.3",
     "dotenv": "^16.4.7",
     "firebase": "^11.3.1",

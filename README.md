@@ -12,13 +12,12 @@ Ace Budget AI is an intelligent budgeting assistant designed to help users track
 - **Goal Setting**: Allocate funds for future purchases and track progress towards financial goals.
 - **Personalized Reports**: Receive detailed spending reports and insights to optimize financial decisions.
 
-## How It Works
-1. **Input Transactions**: Users can upload receipts, sync email transactions, or manually enter expenses.
-2. **Analyze Spending**: The AI categorizes expenses and identifies spending patterns.
-3. **Receive Insights**: Get real-time alerts and personalized budget recommendations.
-4. **Optimize Finances**: Follow AI-driven advice to save money and stay on track with financial goals.
+## Getting Started
 
-## Installation
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+### Installation
+
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/ace-budget-ai.git
@@ -31,16 +30,43 @@ Ace Budget AI is an intelligent budgeting assistant designed to help users track
    ```bash
    npm install
    ```
-4. Run the application:
-   ```bash
-   npm start
-   ```
+
+### Running the Development Server
+
+Start the Next.js development server:
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Technologies Used
-- **Frontend**: React, Tailwind CSS
-- **Backend**: Node.js, Express
-- **Database**: MongoDB
-- **AI & Analytics**: TensorFlow, OpenAI API
+- **Frontend**: Next.js, React, Tailwind CSS
+- **Backend**: Node.js, Python Flask
+- **Database**: Firebase and MongoDB
+- **AI & Analytics**: Google Cloud Vision API or Tesseract.js, spaCy for spending categorization, TensorFlow or Prophet for forecasting, OpenAI API, Hugging Face
+
+## Learn More
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ## Contributing
 We welcome contributions! Follow these steps:

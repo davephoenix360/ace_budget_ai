@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.11.3",
+    "@huggingface/inference": "^3.3.4",
+    "@huggingface/transformers": "^3.3.3",
     "@radix-ui/react-slot": "^1.1.2",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
@@ -21,6 +24,7 @@
     "mongoose": "^8.10.1",
     "motion": "^12.4.3",
     "next": "15.1.7",
+    "openai": "^4.85.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.0.1",

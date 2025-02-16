@@ -71,7 +71,7 @@ function ExpensesScreen() {
   };
 
   return (
-    <div className="p-10">
+    <div className="p-10 space-y-5">
       <h2 className="font-bold text-3xl">My Expenses</h2>
       <ExpenseListTable
         refreshData={getAllExpenses}

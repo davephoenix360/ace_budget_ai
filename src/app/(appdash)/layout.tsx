@@ -34,8 +34,8 @@ export default function RootLayout({
             <div className="fixed md:w-64 hidden md:block">
               <SideNav />
             </div>
+            <div className="flex-1 md:ml-64">{children}</div>
           </div>
-          {children}
         </body>
       </html>
     </ClerkProvider>

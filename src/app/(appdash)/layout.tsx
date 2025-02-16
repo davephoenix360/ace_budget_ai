@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import SideNav from "./dashboard/_components/SideNav";
-import DashboardHeader from "./dashboard/_components/DashboardHeader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,10 +34,7 @@ export default function RootLayout({
             <div className="fixed md:w-64 hidden md:block">
               <SideNav />
             </div>
-            <div className="md:ml-64">
-              <DashboardHeader />
-              {children}
-            </div>
+            <div className="flex-1 md:ml-64">{children}</div>
           </div>
         </body>
       </html>

@@ -38,9 +38,9 @@ function SideNav() {
         },
         {
             id: 4,
-            name: "Expenses",
+            name: "Receipts",
             icon: ReceiptText,
-            path: "/expenses"
+            path: "/receipts"
         },
 
         {

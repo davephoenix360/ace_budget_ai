@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { Trash } from "lucide-react";
 import { toast } from "sonner";
 
 type Expense = {
@@ -21,6 +20,8 @@ export default function ExpenseListTable({ expensesList, refreshData }: Props) {
      * Replace this with your real backend or API call.
      */
     const deleteExpense = async (expense: Expense) => {
+        console.log(`Deleting expense: ${expense.name} (${expense.id})`);
+
         // Simulate a short delay (e.g., API call)
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -60,12 +61,7 @@ export default function ExpenseListTable({ expensesList, refreshData }: Props) {
                     >
                         Delete
                     </h2>
-                    {/* Alternatively, you could show an icon:
-             <Trash 
-               className="text-red-500 cursor-pointer" 
-               onClick={() => deleteExpense(expense)}
-             /> 
-          */}
+
                 </div>
             ))}
         </div>

@@ -34,7 +34,7 @@ export async function DELETE(
 ) {
   await dbConnect();
   try {
-    const { id } = params;
+    const { id } = await params;
     const deletedExpense = await Expense.findByIdAndDelete(id);
     if (!deletedExpense) {
       return NextResponse.json({ error: "Expense not found" }, { status: 404 });

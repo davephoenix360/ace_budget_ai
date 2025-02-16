@@ -47,6 +47,7 @@ function ExpensesScreen() {
     // Front-end only simulation: sample data
     const simulatedResult: IExpense[] = [
       {
+        _id: 1,
         userId: "user1",
         amount: 50,
         description: "Groceries",
@@ -56,6 +57,7 @@ function ExpensesScreen() {
         updatedAt: new Date("2023-02-14"),
       },
       {
+        _id: 2,
         userId: "user2",
         amount: 25,
         description: "Internet",

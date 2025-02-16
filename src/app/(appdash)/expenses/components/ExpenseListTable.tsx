@@ -1,5 +1,6 @@
 "use client";
 import { IExpense } from "@/mongodb/models/expense";
+import { NextResponse } from "next/server";
 import React from "react";
 import { toast } from "sonner";
 
@@ -75,7 +76,10 @@ export default function ExpenseListTable({ expensesList, refreshData }: Props) {
                     </button>
                     <button
                         className="p-2 text-blue-500 cursor-pointer hover:text-blue-700 border ml-2"
-                        onClick={() => console.log(`Updating expense: ${expense._id}`)}
+                        onClick={() => {
+                            console.log(`Updating expense: ${expense._id}`);
+                            return NextResponse.redirect(`localhost:3000/expenses/${expense._id}`);
+                        }}
                     >
                         Update
                     </button>

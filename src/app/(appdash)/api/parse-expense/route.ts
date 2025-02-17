@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ExpenseCategory } from "../../../../mongodb/models/expense";
 import Groq from "groq-sdk";
 import Ajv from "ajv";
+import { ExpenseCategory } from "@/firebase/schemas/expensecategories";
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -26,31 +26,36 @@ export async function POST(req: NextRequest) {
 
     // Optimized Groq prompt
     const prompt = `
-You are a financial data extraction expert. Convert this receipt into JSON:
+You are a financial data extraction expert. Convert the following receipt text into a JSON object that matches the structure below.
 
 RECEIPT TEXT:
 ${text}
 
 JSON TEMPLATE:
 {
-  "receipts": [{
-    "total": <number>,
-    "expenses": [{
-      "amount": <number>,
-      "description": "<string>",
-      "category": "<${Object.values(ExpenseCategory).join(" | ")}>",
-      "date": "<ISO 8601>"
-    }]
-  }]
+  "receipts": [
+    {
+      "total": <number>,
+      "expenses": [
+        {
+          "amount": <number>,
+          "description": "<string>",
+          "category": "<one of: ${Object.values(ExpenseCategory).join(" | ")}>",
+          "date": "<ISO 8601 date string>"
+        }
+      ]
+    }
+  ]
 }
 
 RULES:
-- Respond ONLY with valid JSON
-- Numbers as numerals (no strings)
-- Convert all dates to ISO 8601
-- Categorize strictly from provided list
-- No markdown or formatting
+- Respond ONLY with a valid JSON object and nothing else.
+- Output numbers as numerals (not strings).
+- Convert all dates to ISO 8601 format.
+- Use only the provided list for the category field.
+- Do not include any markdown, explanations, or extra text.
 `;
+
 
     try {
       const chatCompletion = await groq.chat.completions.create({

@@ -2,7 +2,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { firestoredb } from "../config";
 
 export async function createExpense(expenseData: any) {
-  const { userId, amount, description, category, date, receiptId } =
+  const { userId, amount, description, category, date, receiptId, receiptUrl } =
     expenseData;
   const newExpense = {
     userId: userId,
@@ -11,6 +11,7 @@ export async function createExpense(expenseData: any) {
     category: category,
     date: date,
     receiptId: receiptId,
+    receiptUrl: receiptUrl,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

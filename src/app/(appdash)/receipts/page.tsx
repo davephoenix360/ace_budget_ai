@@ -77,7 +77,7 @@ export default function ReceiptsScreen() {
         refreshData={getAllReceipts}
         receiptList={receiptList}
       />
-      <AddReceipt userId={user?.id || "test"} />
+      <AddReceipt userId={user?.id || "test"} callback={getAllReceipts} />
     </div>
   );
 }

@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       category: body.category,
       date: new Date(body.date),
       receiptId: body.receiptId || "test",
+      receiptUrl: body.receiptUrl || "",
     };
 
     const newExpense = await createExpense(expenseData);

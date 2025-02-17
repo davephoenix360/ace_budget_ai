@@ -53,6 +53,7 @@ function AddExpense({
           description: description,
           category: category,
           date: date,
+          receiptUrl: receiptUrl,
         }),
       });
 
@@ -117,7 +118,7 @@ function AddExpense({
       <div className="mt-2">
         <h2 className="text-black font-medium my-1">Category</h2>
         <Input
-          placeholder="e.g. Food"
+          placeholder="e.g. Food & Dining | Transportation | Entertainment | Groceries | Health & Wellness | Utilities & Bills | Shopping | Education | Subscriptions | Travel | Income | Other"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         />

@@ -7,6 +7,8 @@ import Image from "next/image";
 import AddExpense from "../../../expenses/components/AddExpense";
 import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestoredb } from "@/firebase/config";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type IExpense = {
   id: string;
@@ -34,11 +36,11 @@ function NewReceiptPage({
   const [expensesList, setExpensesList] = useState<any[]>([]);
   const { user } = useUser();
 
-  const addExpenseCallback = (expenseIdAdded : string) => {
+  const addExpenseCallback = (expenseIdAdded: string) => {
     updateExpensesListIdsInStore([...expensesListIds, expenseIdAdded]);
     setExpensesListIds([...expensesListIds, expenseIdAdded]);
     getAllExpenses();
-  }
+  };
 
   const getAllExpenses = async () => {
     console.log("Fetching all expenses");
@@ -65,12 +67,32 @@ function NewReceiptPage({
 
   const updateExpensesListIdsInStore = async (listIds: string[]) => {
     const receiptDocRef = doc(collection(firestoredb, "receipts"), receiptId);
-    
+
     await updateDoc(receiptDocRef, {
       expenses: listIds,
     });
 
     console.log("Updated expenses list in receipt");
+  };
+
+  const getTotalAmount = () => {
+    console.log("Calculating total amount");
+
+    let totalAmount = 0;
+    expensesList.forEach((expense) => {
+      totalAmount += expense.amount;
+    });
+    return totalAmount;
+  };
+
+  const updateReceiptTotal = async () => {
+    const receiptDocRef = doc(collection(firestoredb, "receipts"), receiptId);
+
+    await updateDoc(receiptDocRef, {
+      total: getTotalAmount(),
+    });
+
+    console.log("Updated total amount in receipt");
   }
 
   useEffect(() => {
@@ -79,6 +101,7 @@ function NewReceiptPage({
 
   useEffect(() => {
     getAllExpenses();
+    updateReceiptTotal();
   }, [expensesListIds]);
 
   return (
@@ -88,6 +111,16 @@ function NewReceiptPage({
         expensesList={expensesList}
         refreshData={getAllExpenses}
       />
+      <div>
+        <Button
+          onClick={() => {
+            updateReceiptTotal();
+            window.history.back();
+          }}
+        >
+          Back to Receipts
+        </Button>
+      </div>
       <AddExpense
         receiptId={receiptId}
         addExpenseCallback={addExpenseCallback}

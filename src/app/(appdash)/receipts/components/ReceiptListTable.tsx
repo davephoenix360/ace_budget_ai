@@ -25,6 +25,7 @@ export default function ReceiptListTable({ receiptList, refreshData }: Props) {
   const deleteReceipt = async (receipt: IReceipt) => {
     console.log(`Deleting expense: ${receipt.id}`);
 
+    const expenses = receipt.expenses;
     // DELETE /api/receipts/[id]
     await fetch(`/api/receipts/${receipt.id}`, {
       method: "DELETE",
@@ -38,6 +39,23 @@ export default function ReceiptListTable({ receiptList, refreshData }: Props) {
       })
       .catch((error) => {
         console.error("Error:", error);
+      });
+
+      // Delete all expenses associated with this receipt
+      expenses.forEach(async (expenseId) => {
+        await fetch(`/api/expenses/${expenseId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Deleted expense:", data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
       });
 
     toast("Expense Deleted (front-end only)!");

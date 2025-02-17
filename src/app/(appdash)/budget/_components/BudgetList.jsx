@@ -44,7 +44,6 @@ function BudgetList() {
           <BudgetItem budget={budget} key={index} />
       //   ))
       // :[1,2,3,4,5].map((item,index)=>( */}
-      <h2>Create Budget</h2>
         <div className='w-full bg-slate-200 rounded-lg
         h-[150px] animate-pulse'>
 

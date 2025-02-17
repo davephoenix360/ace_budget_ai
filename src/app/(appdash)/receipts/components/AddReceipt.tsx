@@ -165,7 +165,7 @@ export default function AddReceipt({ userId, callback }: Props) {
           Manually Create Receipt
         </button>
       </div>
-      {ocrText && (
+      {ocrText && loading && (
         <div className="mt-4">
           <h2 className="text-xl mb-2">OCR Output:</h2>
           <pre className="bg-gray-100 p-4 rounded">{ocrText}</pre>

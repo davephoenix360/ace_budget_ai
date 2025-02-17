@@ -6,8 +6,7 @@ import {
     LayoutGrid,
     PiggyBank,
     ReceiptText,
-    ShieldCheck,
-    CircleDollarSign
+    ChartLine,
 } from 'lucide-react'
 
 import { UserButton } from '@clerk/clerk-react';
@@ -24,30 +23,25 @@ function SideNav() {
             icon: LayoutGrid,
             path: "/dashboard"
         },
-        {
-            id: 2,
-            name: "Incomes",
-            icon: CircleDollarSign,
-            path: "/dashboard/incomes"
-        },
+
         {
             id: 3,
             name: "Budgets",
             icon: PiggyBank,
-            path: "/dashboard/budgets"
+            path: "/budget"
         },
         {
             id: 4,
-            name: "Expenses",
+            name: "Receipts",
             icon: ReceiptText,
-            path: "/expenses"
+            path: "/receipts"
         },
 
         {
             id: 5,
-            name: "Upgrade",
-            icon: ShieldCheck,
-            path: "/dashboard/upgrade"
+            name: "Analysis",
+            icon: ChartLine,
+            path: "/analysis"
         },
     ];
 

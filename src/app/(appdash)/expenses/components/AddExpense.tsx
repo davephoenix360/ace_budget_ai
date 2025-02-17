@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 
 interface Props {
   receiptId?: string;
-  addExpenseCallback?: (expenseIdAdded : string) => void;
+  addExpenseCallback?: (expenseIdAdded: string) => void;
 }
 
 function AddExpense({
@@ -67,9 +67,6 @@ function AddExpense({
       setCategory("");
       setDate(new Date());
       setReceiptUrl("");
-
-      // You could show a toast or alert here:
-      alert("New Expense Added! (front-end only placeholder)");
     } catch (error) {
       // Handle the error (e.g., show toast):
       console.error("Failed to add expense:", error);

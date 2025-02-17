@@ -1,5 +1,3 @@
-Here's an improved, more polished version of your README with better structure and formatting:
-
 # Ace Budget AI 💸🤖
 
 **Your Intelligent Partner for Smarter Financial Management**

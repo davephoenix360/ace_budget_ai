@@ -2,20 +2,24 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IExpense } from "@/mongodb/models/expense";
-import mongoose from "mongoose";
+import { useUser } from "@clerk/nextjs";
 
 interface Props {
-  userId: mongoose.Types.ObjectId;
+  receiptId?: string;
+  addExpenseCallback?: (expenseIdAdded : string) => void;
 }
 
-function AddExpense({ userId }: Props) {
-  const [amount, setAmount] = useState("");
+function AddExpense({
+  receiptId,
+  addExpenseCallback,
+}: Props) {
+  const [amount, setAmount] = useState(0);
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState(new Date());
   const [receiptUrl, setReceiptUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const { user } = useUser();
 
   /*
     This is the IExpense Interface:
@@ -39,24 +43,25 @@ function AddExpense({ userId }: Props) {
     setLoading(true);
 
     try {
-      // ==========================
-      // ===== BACKEND STUB ======
-      // Insert your backend logic here.
-      // Example pseudo-code:
-      //
-      // await fetch("/api/expenses", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ name, amount }),
-      // });
-      //
-      // ==========================
+      const response = await fetch("/api/expenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clerkId: user?.id,
+          receiptId: receiptId || "",
+          amount: amount,
+          description: description,
+          category: category,
+          date: date,
+        }),
+      });
 
-      // Fake a short delay to simulate an API call:
-      await new Promise((res) => setTimeout(res, 1200));
+      const expenseIdAdded = await response.json();
+      console.log("Expense added: ", expenseIdAdded);
+      addExpenseCallback?.(expenseIdAdded.id);
 
       // Reset form after success:
-      setAmount("");
+      setAmount(0);
       setDescription("");
       setCategory("");
       setDate(new Date());
@@ -95,9 +100,10 @@ function AddExpense({ userId }: Props) {
       <div className="mt-2">
         <h2 className="text-black font-medium my-1">Expense Amount</h2>
         <Input
+          type="number"
           placeholder="e.g. 1000"
           value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          onChange={(e) => setAmount(Number(e.target.value))}
         />
       </div>
       <div className="mt-2">

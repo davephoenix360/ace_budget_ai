@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { IExpense } from "@/mongodb/models/expense";
-import mongoose from "mongoose";
 
 interface Props {
-  userId: mongoose.Types.ObjectId;
+  userId?: string;
 }
 
 function AddExpense({ userId }: Props) {

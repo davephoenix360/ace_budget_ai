@@ -10,7 +10,7 @@ export default function UserRegister() {
   useEffect(() => {
     if (user) {
       // Call the API route to register the user in MongoDB.
-      fetch("/api/clerk/register", {
+      fetch("/api/firebase/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

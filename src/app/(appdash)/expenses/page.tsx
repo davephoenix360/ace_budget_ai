@@ -2,13 +2,24 @@
 import React, { useEffect, useState } from "react";
 import ExpenseListTable from "./components/ExpenseListTable";
 import { useUser } from "@clerk/nextjs";
-import { IExpense } from "@/mongodb/models/expense";
-import AddExpense from "./components/AddExpense";
 
 // Uncomment the following imports if you enable backend functionality
 // import { db } from "@/utils/dbConfig";
 // import { Budgets, Expenses } from "@/utils/schema";
 // import { desc, eq } from "drizzle-orm";
+
+type IExpense = {
+  id: string;
+  userId: string;
+  receiptId: string;
+  amount: number;
+  description: string;
+  category: string;
+  date: Date;
+  receiptUrl?: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 function ExpensesScreen() {
   const [expensesList, setExpensesList] = useState<IExpense[]>([]);
@@ -43,9 +54,23 @@ function ExpensesScreen() {
         // Uncomment and adjust this code when enabling backend integration
         backend;
         */
+    // GET /api/expenses
+    await fetch("/api/expenses", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setExpensesList(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
     // Front-end only simulation: sample data
-    const simulatedResult: IExpense[] = [
+    /* const simulatedResult: IExpense[] = [
       {
         _id: 1,
         userId: "user1",
@@ -67,7 +92,7 @@ function ExpensesScreen() {
         updatedAt: new Date("2023-02-15"),
       },
     ];
-    setExpensesList(simulatedResult);
+    setExpensesList(simulatedResult); */
   };
 
   return (
@@ -77,7 +102,7 @@ function ExpensesScreen() {
         refreshData={getAllExpenses}
         expensesList={expensesList}
       />
-      <AddExpense />
+      {/* <AddExpense /> */}
     </div>
   );
 }

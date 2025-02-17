@@ -1,0 +1,23 @@
+{
+  "userId": "string", // Reference to the user's document ID
+  "totalBudget": "number", // Overall budget amount
+  "startDate": "timestamp", // Budget start date
+  "endDate": "timestamp", // Budget end date
+  "categoryBudgets": {
+    // A mapping of expense categories to specific budget allocations
+    "Food & Dining": "number",
+    "Transportation": "number",
+    "Entertainment": "number",
+    "Groceries": "number",
+    "Health & Wellness": "number",
+    "Utilities & Bills": "number",
+    "Shopping": "number",
+    "Education": "number",
+    "Subscriptions": "number",
+    "Travel": "number",
+    "Income": "number",
+    "Other": "number"
+  },
+  "createdAt": "timestamp", // Document creation time
+  "updatedAt": "timestamp" // Document last update time
+}

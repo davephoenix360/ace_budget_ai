@@ -1,14 +1,12 @@
+import { createExpense } from "@/firebase/helpers/createExpense";
+import { getExpensesByUserAndReceipt } from "@/firebase/helpers/getExpenses";
 import { NextResponse } from "next/server";
-import { dbConnect } from "../../../../mongodb/connection";
-import ExpenseModel from "../../../../mongodb/models/expense";
-import User from "@/mongodb/models/user";
 
 export async function GET(request: Request) {
   try {
-    await dbConnect();
-
     const { searchParams } = new URL(request.url);
     const clerkId = searchParams.get("clerkId");
+    const receiptId = searchParams.get("receiptId");
 
     if (!clerkId) {
       return NextResponse.json(
@@ -17,14 +15,14 @@ export async function GET(request: Request) {
       );
     }
 
-    const user = await User.findOne({ clerkId }).lean();
-    if (!user)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!receiptId) {
+      return NextResponse.json(
+        { error: "receiptId query parameter is required" },
+        { status: 400 }
+      );
+    }
 
-    const expenses = await Expense.find({ userId: user._id })
-      .sort({ date: -1 })
-      .lean();
-
+    const expenses = await getExpensesByUserAndReceipt(clerkId, receiptId);
     return NextResponse.json(expenses);
   } catch (error: any) {
     console.error("Error fetching expenses:", error);
@@ -37,30 +35,24 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    await dbConnect();
     const body = await request.json();
 
     if (!body.clerkId) {
       return NextResponse.json(
-        { error: "clerkId is required" },
-        { status: 400 }
+        { error: "clerkId is required", status: 400 }
       );
     }
 
-    const user = await User.findOne({ clerkId: body.clerkId });
-    if (!user)
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-    const expenseData = {
-      userId: user._id,
+  const expenseData = {
+      userId: body.clerkId,
       amount: parseFloat(body.amount),
       description: body.description.trim(),
       category: body.category,
       date: new Date(body.date),
-      receiptUrl: body.receiptUrl || undefined,
+      receiptId: body.receiptId || "test",
     };
 
-    const newExpense = await Expense.create(expenseData);
+    const newExpense = await createExpense(expenseData);
     return NextResponse.json(newExpense, { status: 201 });
   } catch (error: any) {
     console.error("Error creating expense:", error);

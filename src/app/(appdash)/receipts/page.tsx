@@ -1,20 +1,28 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ExpenseListTable from "./components/ExpenseListTable";
 import { useUser } from "@clerk/nextjs";
-import { IExpense } from "@/mongodb/models/expense";
-import AddExpense from "./components/AddExpense";
+import ReceiptListTable from "./components/ReceiptListTable";
+import AddReceipt from "./components/AddReceipt";
 
 // Uncomment the following imports if you enable backend functionality
 // import { db } from "@/utils/dbConfig";
 // import { Budgets, Expenses } from "@/utils/schema";
 // import { desc, eq } from "drizzle-orm";
+type IReceipt = {
+  id: string;
+  userId: string;
+  total: number;
+  expenses: string[];
+  receiptImageURL: string;
+  createdAt: { nanoseconds: number; seconds: number };
+  updatedAt: { nanoseconds: number; seconds: number };
+};
 
-function ExpensesScreen() {
-    const [expensesList, setExpensesList] = useState<IExpense[]>([]);
-    const { user } = useUser();
+export default function ReceiptsScreen() {
+  const [receiptList, setReceiptsList] = useState<IReceipt[]>([]);
+  const { user } = useUser();
 
-    /*
+  /*
       THis is how the IExpense interface looks like:
       export interface IExpense extends Document {
           userId: mongoose.Types.ObjectId; 
@@ -28,58 +36,48 @@ function ExpensesScreen() {
       }
       */
 
-    useEffect(() => {
-        if (user) {
-            getAllExpenses();
-        }
-    }, [user]);
+  useEffect(() => {
+    if (user) {
+      getAllReceipts();
+    }
+  }, [user]);
 
-    /**
-     * Used to get all expenses that belong to the user.
-     * Backend code is commented out for front-end-only testing.
-     */
-    const getAllExpenses = async () => {
-        /*
+  /**
+   * Used to get all expenses that belong to the user.
+   * Backend code is commented out for front-end-only testing.
+   */
+  const getAllReceipts = async () => {
+    /*
             // Uncomment and adjust this code when enabling backend integration
             backend;
             */
+    // GET /api/receipts
+    await fetch(`/api/receipts?clerkId=${user?.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        setReceiptsList(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
 
-        // Front-end only simulation: sample data
-        const simulatedResult: IExpense[] = [
-            {
-                _id: 1,
-                userId: "user1",
-                amount: 50,
-                description: "Groceries",
-                category: "Food",
-                date: new Date("2023-02-14"),
-                createdAt: new Date("2023-02-14"),
-                updatedAt: new Date("2023-02-14"),
-            },
-            {
-                _id: 2,
-                userId: "user2",
-                amount: 25,
-                description: "Internet",
-                category: "Utilities",
-                date: new Date("2023-02-15"),
-                createdAt: new Date("2023-02-15"),
-                updatedAt: new Date("2023-02-15"),
-            },
-        ];
-        setExpensesList(simulatedResult);
-    };
+    // Front-end only simulation: sample data
+  };
 
-    return (
-        <div className="p-10 space-y-5">
-            <h2 className="font-bold text-3xl">My Reciepts</h2>
-            <ExpenseListTable
-                refreshData={getAllExpenses}
-                expensesList={expensesList}
-            />
-            {/* <AddExpense /> */}
-        </div>
-    );
+  return (
+    <div className="p-10 space-y-5">
+      <h2 className="font-bold text-3xl">My Reciepts</h2>
+      <ReceiptListTable
+        refreshData={getAllReceipts}
+        receiptList={receiptList}
+      />
+      <AddReceipt userId={user?.id || "test"} />
+    </div>
+  );
 }
-
-export default ExpensesScreen;

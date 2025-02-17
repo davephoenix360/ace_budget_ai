@@ -1,0 +1,11 @@
+{
+  "userId": "string",             // Reference to the user's document ID (from users collection)
+  "receiptId": "string|null",     // Reference to the receipt's document ID (from receipts collection)
+  "amount": "number",             // Expense amount
+  "description": "string",        // A brief description of the expense
+  "category": "Food & Dining | Transportation | Entertainment | Groceries | Health & Wellness | Utilities & Bills | Shopping | Education | Subscriptions | Travel | Income | Other",
+  "date": "timestamp",            // Date of the expense (use ISO string or Firestore Timestamp)
+  "receiptUrl": "string|null",    // URL of the uploaded receipt (if available)
+  "createdAt": "timestamp",       // Document creation time
+  "updatedAt": "timestamp"        // Document last update time
+}

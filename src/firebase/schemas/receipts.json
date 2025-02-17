@@ -1,0 +1,8 @@
+{
+  "userId": "string", // Reference to the user's document ID
+  "total": "number", // Total amount for the receipt
+  "expenses": "string[]", // Array of expense IDs associated with this receipt
+  "receiptImageUrl": "string|null", // URL to the receipt image, if available
+  "createdAt": "timestamp", // Document creation time
+  "updatedAt": "timestamp" // Document last update time
+}

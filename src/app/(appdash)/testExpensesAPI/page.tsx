@@ -1,314 +1,249 @@
-// app/expenses/page.tsx
 "use client";
 
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
+import { ExpenseCategory } from "@/mongodb/models/expense";
+
+interface ExpenseForm {
+  amount: string;
+  description: string;
+  category: ExpenseCategory | "";
+  date: string;
+  receiptUrl?: string;
+}
 
 export default function ExpensesPage() {
   const { user } = useUser();
   const [expenses, setExpenses] = useState<any[]>([]);
-  const [newExpense, setNewExpense] = useState({
-    userId: user?.id, // Replace with actual authenticated user ID
-    amount: 0,
+  const [form, setForm] = useState<ExpenseForm>({
+    amount: "",
     description: "",
     category: "",
-    date: new Date().toISOString(),
+    date: new Date().toISOString().split("T")[0],
     receiptUrl: "",
   });
-  const [editing, setEditing] = useState(false);
-  const [selectedExpenseId, setSelectedExpenseId] = useState("");
-  const [updatedExpense, setUpdatedExpense] = useState({
-    userId: user?.id, // Replace with actual authenticated user ID
-    amount: 0,
-    description: "",
-    category: "",
-    date: new Date().toISOString(),
-    receiptUrl: "",
-  });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch expenses from the API
   const fetchExpenses = async () => {
     try {
-      // INclude the clerkId in the query string
-      const res = await fetch("/api/expenses?clerkId=" + user?.id);
+      const res = await fetch(`/api/expenses?clerkId=${user?.id}`);
+      if (!res.ok) throw new Error("Failed to fetch expenses");
       const data = await res.json();
       setExpenses(data);
-      console.log("Expenses fetched:", data);
     } catch (err) {
-      console.error("Error fetching expenses:", err);
+      console.error(err);
       setError("Failed to fetch expenses");
     }
   };
 
-  // Add a new expense
-  const addExpense = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
     try {
-      const res = await fetch("/api/expenses", {
-        method: "POST",
+      const method = editingId ? "PUT" : "POST";
+      const url = editingId ? `/api/expenses/${editingId}` : "/api/expenses";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newExpense),
+        body: JSON.stringify({
+          clerkId: user?.id,
+          ...form,
+          amount: parseFloat(form.amount),
+        }),
       });
-      if (!res.ok) throw new Error("Failed to create expense");
-      const createdExpense = await res.json();
-      setExpenses((prev) => [...prev, createdExpense]);
-      setNewExpense({
-        userId: newExpense.userId,
-        amount: 0,
+
+      if (!res.ok) throw new Error(await res.json().then((data) => data.error));
+
+      const result = await res.json();
+      setExpenses((prev) =>
+        editingId
+          ? prev.map((e) => (e._id === editingId ? result : e))
+          : [...prev, result]
+      );
+      setForm({
+        amount: "",
         description: "",
         category: "",
-        date: new Date().toISOString(),
-        receiptUrl: "",
+        date: new Date().toISOString().split("T")[0],
       });
+      setEditingId(null);
     } catch (err) {
       console.error(err);
-      setError("Error creating expense");
+      setError(err instanceof Error ? err.message : "Failed to save expense");
     } finally {
       setLoading(false);
     }
   };
 
-  const updateExpense = async (id: string) => {
-    setLoading(true);
-    setError("");
-    fetch(`/api/expenses/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedExpense),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Updated expense:", data);
-        setExpenses((prev) =>
-          prev.map((expense) =>
-            expense._id === id ? { ...expense, ...updatedExpense } : expense
-          )
-        );
-      })
-      .catch((err) => {
-        console.error("Error updating expense:", err);
-        setError("Failed to update expense");
-      })
-      .finally(() => {
-        setLoading(false);
-        setEditing(false);
-        setUpdatedExpense({
-          userId: user?.id,
-          amount: 0,
-          description: "",
-          category: "",
-          date: new Date().toISOString(),
-          receiptUrl: "",
-        });
-      });
-  };
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this expense?")) return;
 
-  const deleteExpense = async (id: string) => {
-    fetch(`/api/expenses/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Deleted expense:", data);
-        setExpenses((prev) => prev.filter((expense) => expense._id !== id));
-      })
-      .catch((err) => {
-        console.error("Error deleting expense:", err);
-        setError("Failed to delete expense");
-      });
+    try {
+      const res = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete expense");
+      setExpenses((prev) => prev.filter((e) => e._id !== id));
+    } catch (err) {
+      console.error(err);
+      setError("Failed to delete expense");
+    }
   };
 
   useEffect(() => {
-    if (!user) return;
-    fetchExpenses();
-    console.log("Expenses fetched for user:", user?.id);
-    setNewExpense({ ...newExpense, userId: user?.id });
-  }, [user]);
+    if (user?.id) fetchExpenses();
+  }, [user?.id]);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl mb-4">Expenses</h1>
-      {error && <p className="text-red-500">{error}</p>}
-      {editing ? (
-        <form
-          onSubmit={() => updateExpense(selectedExpenseId)}
-          className="mb-4"
-        >
-          <div>
-            <label>Amount:</label>
-            <input
-              type="number"
-              value={updatedExpense?.amount}
-              onChange={(e) =>
-                setUpdatedExpense({
-                  ...updatedExpense,
-                  amount: parseFloat(e.target.value),
-                })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <div>
-            <label>Description:</label>
-            <input
-              type="text"
-              value={updatedExpense.description}
-              onChange={(e) =>
-                setUpdatedExpense({
-                  ...updatedExpense,
-                  description: e.target.value,
-                })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <div>
-            <label>Category:</label>
-            <input
-              type="text"
-              value={updatedExpense.category}
-              onChange={(e) =>
-                setUpdatedExpense({ ...updatedExpense, category: e.target.value })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <div>
-            <label>Date:</label>
-            <input
-              type="date"
-              value={updatedExpense.date.slice(0, 10)}
-              onChange={(e) =>
-                setUpdatedExpense({
-                  ...updatedExpense,
-                  date: new Date(e.target.value).toISOString(),
-                })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-            disabled={loading}
-          >
-            {loading ? "Updating..." : "Update Expense"}
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={addExpense} className="mb-4">
-          <div>
-            <label>Amount:</label>
-            <input
-              type="number"
-              value={newExpense.amount}
-              onChange={(e) =>
-                setNewExpense({
-                  ...newExpense,
-                  amount: parseFloat(e.target.value),
-                })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <div>
-            <label>Description:</label>
-            <input
-              type="text"
-              value={newExpense.description}
-              onChange={(e) =>
-                setNewExpense({ ...newExpense, description: e.target.value })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <div>
-            <label>Category:</label>
-            <input
-              type="text"
-              value={newExpense.category}
-              onChange={(e) =>
-                setNewExpense({ ...newExpense, category: e.target.value })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <div>
-            <label>Date:</label>
-            <input
-              type="date"
-              value={newExpense.date.slice(0, 10)}
-              onChange={(e) =>
-                setNewExpense({
-                  ...newExpense,
-                  date: new Date(e.target.value).toISOString(),
-                })
-              }
-              required
-              className="border p-2"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-            disabled={loading}
-          >
-            {loading ? "Adding..." : "Add Expense"}
-          </button>
-        </form>
-      )}
+    <div className="p-8 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Expense Management</h1>
 
-      <h2 className="text-xl mt-8">Expense List</h2>
-      <ul>
-        {expenses.map((expense) => (
-          <li key={expense._id} className="border p-2 my-2">
-            <p>
-              <strong>Amount:</strong> {expense.amount}
-            </p>
-            <p>
-              <strong>Description:</strong> {expense.description}
-            </p>
-            <p>
-              <strong>Category:</strong> {expense.category}
-            </p>
-            <p>
-              <strong>Date:</strong>{" "}
-              {new Date(expense.date).toLocaleDateString()}
-            </p>
-            <div>
-              <button
-                className="bg-blue-500 text-white px-2 py-1 rounded mt-2 mr-2"
-                onClick={() => {
-                  setEditing(true);
-                  setSelectedExpenseId(expense._id);
-                  setUpdatedExpense(expense);
-                }}
-              >
-                Edit
-              </button>
-              <button
-                className="bg-red-500 text-white px-2 py-1 rounded mt-2"
-                onClick={() => deleteExpense(expense._id)}
-              >
-                Delete
-              </button>
+      <form onSubmit={handleSubmit} className="mb-8 p-4 bg-gray-50 rounded-lg">
+        <h2 className="text-xl font-semibold mb-4">
+          {editingId ? "Edit Expense" : "Add New Expense"}
+        </h2>
+
+        {error && <p className="text-red-600 mb-4">{error}</p>}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-2">Amount ($)</label>
+            <input
+              type="number"
+              step="0.01"
+              value={form.amount}
+              onChange={(e) => setForm({ ...form, amount: e.target.value })}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block mb-2">Date</label>
+            <input
+              type="date"
+              value={form.date}
+              onChange={(e) => setForm({ ...form, date: e.target.value })}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block mb-2">Description</label>
+            <input
+              type="text"
+              value={form.description}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block mb-2">Category</label>
+            <select
+              value={form.category}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  category: e.target.value as ExpenseCategory,
+                })
+              }
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="">Select Category</option>
+              {Object.values(ExpenseCategory).map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
+          disabled={loading}
+        >
+          {loading ? "Saving..." : editingId ? "Update Expense" : "Add Expense"}
+        </button>
+
+        {editingId && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingId(null);
+              setForm({
+                amount: "",
+                description: "",
+                category: "",
+                date: new Date().toISOString().split("T")[0],
+              });
+            }}
+            className="mt-4 ml-4 bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+          >
+            Cancel Edit
+          </button>
+        )}
+      </form>
+
+      <section>
+        <h2 className="text-xl font-semibold mb-4">Expense History</h2>
+        <div className="space-y-4">
+          {expenses.map((expense) => (
+            <div
+              key={expense._id}
+              className="p-4 border rounded-lg bg-white shadow-sm"
+            >
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <p className="font-semibold">${expense.amount.toFixed(2)}</p>
+                  <p className="text-gray-600">{expense.description}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">
+                    {new Date(expense.date).toLocaleDateString()}
+                  </p>
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
+                    {expense.category}
+                  </span>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={() => {
+                    setEditingId(expense._id);
+                    setForm({
+                      amount: expense.amount.toString(),
+                      description: expense.description,
+                      category: expense.category,
+                      date: new Date(expense.date).toISOString().split("T")[0],
+                      receiptUrl: expense.receiptUrl,
+                    });
+                  }}
+                  className="text-blue-600 hover:text-blue-800 text-sm"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(expense._id)}
+                  className="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

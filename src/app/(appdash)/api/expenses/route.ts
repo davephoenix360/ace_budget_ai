@@ -1,17 +1,15 @@
-// app/api/expenses/route.ts
 import { NextResponse } from "next/server";
-import dbConnect from "../../../../mongodb/connection";
-import Expense from "../../../../mongodb/models/expense";
-import mongoose, { Schema } from "mongoose";
-import user from "@/mongodb/models/user";
+import { dbConnect } from "../../../../mongodb/connection";
+import ExpenseModel from "../../../../mongodb/models/expense";
+import User from "@/mongodb/models/user";
 
 export async function GET(request: Request) {
-  await dbConnect();
-
   try {
-    // Extract clerkId from query parameters
+    await dbConnect();
+
     const { searchParams } = new URL(request.url);
     const clerkId = searchParams.get("clerkId");
+
     if (!clerkId) {
       return NextResponse.json(
         { error: "clerkId query parameter is required" },
@@ -19,14 +17,14 @@ export async function GET(request: Request) {
       );
     }
 
-    // Find the user by clerkId
-    const mongouser = await user.findOne({ clerkId });
-    if (!mongouser) {
+    const user = await User.findOne({ clerkId }).lean();
+    if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
-    // Find expenses that match the user's MongoDB _id
-    const expenses = await Expense.find({ userId: mongouser._id });
+    const expenses = await Expense.find({ userId: user._id })
+      .sort({ date: -1 })
+      .lean();
+
     return NextResponse.json(expenses);
   } catch (error: any) {
     console.error("Error fetching expenses:", error);
@@ -38,35 +36,36 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  await dbConnect();
   try {
+    await dbConnect();
     const body = await request.json();
-    // Assume body.userId is actually a Clerk ID string
-    const clerkId = body.userId;
 
-    // Look up the user in the User collection using the clerkId
-    const userRecord = await user.findOne({ clerkId });
-    if (!userRecord) {
-      throw new Error("User not found for given clerkId");
+    if (!body.clerkId) {
+      return NextResponse.json(
+        { error: "clerkId is required" },
+        { status: 400 }
+      );
     }
 
-    // Replace the provided clerkId with the MongoDB ObjectId from the user record
-    body.userId = userRecord._id;
-    // Assuming you have clerkID in the body for the userId.
-    const newExpense = new Expense({
-      userId: body.userId,
-      amount: body.amount,
-      description: body.description,
+    const user = await User.findOne({ clerkId: body.clerkId });
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    const expenseData = {
+      userId: user._id,
+      amount: parseFloat(body.amount),
+      description: body.description.trim(),
       category: body.category,
-      date: body.date,
-      receiptUrl: body.receiptUrl,
-    });
-    const savedExpense = await newExpense.save();
-    return NextResponse.json(savedExpense, { status: 201 });
-  } catch (error) {
+      date: new Date(body.date),
+      receiptUrl: body.receiptUrl || undefined,
+    };
+
+    const newExpense = await Expense.create(expenseData);
+    return NextResponse.json(newExpense, { status: 201 });
+  } catch (error: any) {
     console.error("Error creating expense:", error);
     return NextResponse.json(
-      { error: "Failed to create expense" },
+      { error: error.message || "Failed to create expense" },
       { status: 500 }
     );
   }

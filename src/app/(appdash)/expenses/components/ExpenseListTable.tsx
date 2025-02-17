@@ -80,7 +80,7 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
                 <td className="p-2">{expense.amount}</td>
                 <td className="p-2">{expense.description}</td>
                 <td className="p-2">{expense.category}</td>
-                <td className="p-2">{new Date(expense.date).toISOString()}</td>
+                <td className="p-2">{new Date(expense.date.seconds * 1000).toISOString()}</td>
                 <td className="p-2">
                   <a
                     href={expense.receiptUrl}
@@ -100,13 +100,13 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
                       Delete
                     </button>
                     <button
-                        className="p-2 text-blue-500 cursor-pointer hover:text-blue-700 border ml-2"
-                        onClick={() => {
-                            console.log(`Updating expense: ${expense.id}`);
-                            return NextResponse.redirect(`localhost:3000/expenses/${expense.id}`);
-                        }}
+                      className="p-2 text-blue-500 cursor-pointer hover:text-blue-700 border ml-2"
+                      onClick={() => {
+                        console.log(`Updating expense: ${expense.id}`);
+                        return NextResponse.redirect(`localhost:3000/expenses/${expense.id}`);
+                      }}
                     >
-                        Update
+                      Update
                     </button>
                   </div>
                 </td>

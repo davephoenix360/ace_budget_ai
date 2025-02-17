@@ -39,6 +39,11 @@ type Recommendation = {
 
 type TimeRange = "weekly" | "monthly" | "quarterly" | "yearly";
 
+// Helper function to simulate delay
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export default function AnalysisPage() {
   const { user } = useUser();
 
@@ -51,11 +56,11 @@ export default function AnalysisPage() {
   const [pieData, setPieData] = useState<{ category: string; value: number }[]>(
     []
   );
-
   const [visibleChart, setVisibleChart] = useState<
     "none" | "bar" | "line" | "pie"
   >("none");
   const [timeRange, setTimeRange] = useState<TimeRange>("monthly");
+  const [loading, setLoading] = useState(false);
 
   const COLORS = [
     "#0088FE",
@@ -140,11 +145,14 @@ export default function AnalysisPage() {
         }
         break;
     }
-
     return data;
   };
 
   async function fetchAnalysisData(range: TimeRange) {
+    setLoading(true);
+    // Simulate a delay (e.g., 2000ms or 2 seconds)
+    await delay(2000);
+
     const simulatedExpenses = generateSimulatedExpenses(range);
     setExpenses(simulatedExpenses);
 
@@ -219,6 +227,7 @@ export default function AnalysisPage() {
     }
 
     setRecommendations(recommendations);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -245,7 +254,7 @@ export default function AnalysisPage() {
   const showBarChart = () => setVisibleChart("bar");
   const showLineChart = () => setVisibleChart("line");
   const showPieChart = () => setVisibleChart("pie");
-  
+
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-3xl font-bold">Analysis & Insights</h1>
@@ -265,8 +274,15 @@ export default function AnalysisPage() {
         </select>
       </div>
 
+      {/* Loading Indicator */}
+      {loading && (
+        <div className="text-center text-gray-600">
+          Loading data, please wait...
+        </div>
+      )}
+
       {/* Budget Forecast Card */}
-      {forecast && (
+      {forecast && !loading && (
         <div className="bg-white rounded-lg p-4 shadow">
           <h2 className="text-xl font-semibold mb-2">Budget Forecast</h2>
           <p>
@@ -285,7 +301,7 @@ export default function AnalysisPage() {
       )}
 
       {/* Personalized Recommendations */}
-      {recommendations.length > 0 && (
+      {recommendations.length > 0 && !loading && (
         <div className="bg-white rounded-lg p-4 shadow">
           <h2 className="text-xl font-semibold mb-2">
             Personalized Recommendations
@@ -315,7 +331,7 @@ export default function AnalysisPage() {
       </div>
 
       {/* Render Charts Conditionally */}
-      {visibleChart === "bar" && (
+      {visibleChart === "bar" && !loading && (
         <div className="bg-white rounded-lg p-4 shadow">
           <h2 className="text-xl font-semibold mb-2">
             Bar Chart: Spending Over Time
@@ -335,7 +351,7 @@ export default function AnalysisPage() {
         </div>
       )}
 
-      {visibleChart === "line" && (
+      {visibleChart === "line" && !loading && (
         <div className="bg-white rounded-lg p-4 shadow">
           <h2 className="text-xl font-semibold mb-2">
             Line Chart: Spending Trend
@@ -360,7 +376,7 @@ export default function AnalysisPage() {
         </div>
       )}
 
-      {visibleChart === "pie" && (
+      {visibleChart === "pie" && !loading && (
         <div className="bg-white rounded-lg p-4 shadow">
           <h2 className="text-xl font-semibold mb-2">
             Pie Chart: Category Breakdown

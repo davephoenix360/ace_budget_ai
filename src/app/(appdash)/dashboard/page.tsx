@@ -4,7 +4,7 @@ import { UserButton, useUser } from '@clerk/nextjs';
 import CardInfo from './_components/CardInfo';
 import BarChartDashboard from './_components/BarChartDashboard';
 export default function DashboardPage() {
-  const {user} = useUser();
+  const { user } = useUser();
   return (
     <div className="p-8 bg-">
       <h2 className="font-bold text-4xl">Hi, {user?.fullName} 👋</h2>
@@ -12,7 +12,7 @@ export default function DashboardPage() {
         Here's what happenning with your money, Lets Manage your expense
       </p>
 
-      <CardInfo  />
+      <CardInfo />
       <div className="grid grid-cols-1 lg:grid-cols-3 mt-6 gap-5">
         <div className="lg:col-span-2">
           <BarChartDashboard />
@@ -29,11 +29,11 @@ export default function DashboardPage() {
                 <BudgetItem budget={budget} key={index} />
               ))
             : [1, 2, 3, 4].map((item, index) => ( */}
-                <div
-                  className="h-[180xp] w-full
+          <div
+            className="h-[180xp] w-full
                  bg-slate-200 rounded-lg animate-pulse"
-                ></div>
-              {/*  ))}  */}
+          ></div>
+          {/*  ))}  */}
         </div>
       </div>
     </div>

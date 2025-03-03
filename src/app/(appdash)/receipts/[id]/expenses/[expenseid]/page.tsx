@@ -6,44 +6,41 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import Image from 'next/image';
+import Image from "next/image";
 
 interface Expense {
-    id: string;
-    name: string;
-    amount: number;
-    description: string;
-    category: string;
-    date: string;
-    receiptUrl?: string;
+  id: string;
+  name: string;
+  amount: number;
+  description: string;
+  category: string;
+  date: string;
+  receiptUrl?: string;
 }
 
 interface ExpenseDetailProps {
-    params: {
-        expenseId: string;
-    };
+  params: Promise<{ expenseId: string }>;
 }
 
 export default function ExpenseDetailPage({ params }: ExpenseDetailProps) {
   const { user } = useUser();
   const router = useRouter();
   const [expense, setExpense] = useState<Expense | null>(null);
-  /**
-   * Fetch expense details.
-   * The backend call is commented out for front-end simulation.
-   */
+
   useEffect(() => {
     const fetchExpenseDetails = async () => {
+      const { expenseId } = await params; // Unwrap the Promise
+
       /*
           // Uncomment for backend integration:
-          const response = await fetch(`/api/expenses/${params.expenseId}`);
+          const response = await fetch(`/api/expenses/${expenseId}`);
           const data: Expense = await response.json();
           setExpense(data);
           */
 
       // Front-end simulation:
       const simulatedExpense: Expense = {
-        id: params.expenseId,
+        id: expenseId,
         name: "Simulated Expense",
         amount: 150,
         description: "Grocery Shopping",
@@ -57,7 +54,7 @@ export default function ExpenseDetailPage({ params }: ExpenseDetailProps) {
     if (user) {
       fetchExpenseDetails();
     }
-  }, [user, params.expenseId]);
+  }, [user, params]);
 
   return (
     <div className="p-10 space-y-5">

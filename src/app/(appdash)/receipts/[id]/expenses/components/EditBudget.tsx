@@ -78,7 +78,7 @@ export default function EditBudget({ budgetInfo, refreshData }: EditBudgetProps)
                 </Button>
             </DialogTrigger>
             <DialogContent>
-                <DialogHeader className="">
+                <DialogHeader>
                     <DialogTitle>Update Budget</DialogTitle>
                     <DialogDescription>
                         <div className="mt-5">

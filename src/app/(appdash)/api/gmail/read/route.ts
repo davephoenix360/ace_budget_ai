@@ -1,10 +1,12 @@
 // api/gmail/read/route.ts
 import { NextResponse } from "next/server";
 import { google } from "googleapis";
-import { fetchGmailToken, getOAuth2Client } from "@/firebase/gmailToken";
+import { getOAuth2Client } from "@/firebase/gmailToken";
 
 export async function GET(request: Request) {
   try {
+    console.log("request sent: ", request);
+    console.log("reading messages");
     const oauth2Client = await getOAuth2Client();
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
     const response = await gmail.users.messages.list({
@@ -25,9 +27,9 @@ export async function GET(request: Request) {
 
     // Only return the snippet and body of each message
     const finalData = messageData.map((message) => ({
-        snippet: message.snippet,
-        body: message.payload?.body?.data,
-        }));
+      snippet: message.snippet,
+      body: message.payload?.body?.data,
+    }));
 
     return NextResponse.json(finalData);
   } catch (error) {

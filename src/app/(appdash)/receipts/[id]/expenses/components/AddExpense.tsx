@@ -14,7 +14,7 @@ function AddExpense({ userId }: Props) {
   const [date, setDate] = useState(new Date());
   const [receiptUrl, setReceiptUrl] = useState("");
   const [loading, setLoading] = useState(false);
-
+  console.log(userId);
   /*
     This is the IExpense Interface:
     export interface IExpense extends Document {

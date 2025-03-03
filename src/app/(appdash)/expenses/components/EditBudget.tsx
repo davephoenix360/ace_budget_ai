@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 
 // Type for budget info (optional)
 type BudgetInfo = {
-    id: number;
+    id: string;
     icon: string;
     name: string;
     amount: number;

@@ -36,17 +36,11 @@ export default function ReceiptsScreen() {
       }
       */
 
-  useEffect(() => {
-    if (user) {
-      getAllReceipts();
-    }
-  }, [user]);
-
   /**
    * Used to get all expenses that belong to the user.
    * Backend code is commented out for front-end-only testing.
    */
-  const getAllReceipts = async () => {
+  const getAllReceipts = React.useCallback(async () => {
     /*
             // Uncomment and adjust this code when enabling backend integration
             backend;
@@ -68,7 +62,12 @@ export default function ReceiptsScreen() {
       });
 
     // Front-end only simulation: sample data
-  };
+  }, [user?.id]);
+  useEffect(() => {
+    if (user) {
+      getAllReceipts();
+    }
+  }, [user, getAllReceipts]);
 
   return (
     <div className="p-10 space-y-5">

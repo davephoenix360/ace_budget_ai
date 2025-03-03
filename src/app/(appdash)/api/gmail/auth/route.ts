@@ -8,7 +8,7 @@ const oauth2Client = new google.auth.OAuth2(
   process.env.GMAIL_REDIRECT_URI
 );
 
-export async function GET(request: Request) {
+export async function GET() {
   const scopes = ["https://www.googleapis.com/auth/gmail.readonly"];
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",

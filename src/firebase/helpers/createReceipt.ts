@@ -2,7 +2,12 @@ import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { firestoredb } from "../config";
 import { ExpenseCategory } from "@/mongodb/models/expense"; // Adjust path if needed
 
-export async function createReceipt(receiptData: any) {
+export async function createReceipt(receiptData: {
+  userId: string;
+  total: number;
+  expenses: string[];
+  receiptImageURL: string;
+}) {
   const { userId, total, expenses, receiptImageURL } = receiptData;
   const newReceipt = {
     userId,

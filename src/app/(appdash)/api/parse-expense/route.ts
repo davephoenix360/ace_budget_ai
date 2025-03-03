@@ -3,6 +3,35 @@ import Groq from "groq-sdk";
 import Ajv from "ajv";
 import { ExpenseCategory } from "@/firebase/schemas/expensecategories";
 
+interface IParsedData {
+  receipts: {
+    total: number;
+    expenses: {
+      amount: number;
+      description: string;
+      category: ExpenseCategory;
+      date: string;
+    }[];
+  }[];
+}
+
+interface IReceipt {
+  total: number;
+  expenses: {
+    amount: number;
+    description: string;
+    category: ExpenseCategory;
+    date: string;
+  }[];
+}
+
+interface IExpense {
+  amount: number;
+  description: string;
+  category: ExpenseCategory;
+  date: string;
+}
+
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
@@ -11,7 +40,17 @@ const ajv = new Ajv();
 
 // Same JSON schema as before (keep your validation)
 const receiptSchema = {
-  /* ... */
+  total: Number,
+  expenses: [
+    {
+      amount: Number,
+      description: String,
+      category: {
+        enum: Object.values(ExpenseCategory),
+      },
+      date: { type: "string", format: "date-time" },
+    },
+  ],
 };
 
 export async function POST(req: NextRequest) {
@@ -56,7 +95,6 @@ RULES:
 - Do not include any markdown, explanations, or extra text.
 `;
 
-
     try {
       const chatCompletion = await groq.chat.completions.create({
         messages: [
@@ -81,7 +119,7 @@ RULES:
 
       // Clean and parse
       const cleanedJson = jsonString.replace(/```json|```/g, "").trim();
-      const parsedData = JSON.parse(cleanedJson);
+      const parsedData: IParsedData = JSON.parse(cleanedJson);
 
       // Validate schema
       const validate = ajv.compile(receiptSchema);
@@ -91,9 +129,9 @@ RULES:
       }
 
       // Post-process categories
-      parsedData.receipts = parsedData.receipts.map((receipt: any) => ({
+      parsedData.receipts = parsedData.receipts.map((receipt: IReceipt) => ({
         ...receipt,
-        expenses: receipt.expenses.map((expense: any) => ({
+        expenses: receipt.expenses.map((expense: IExpense) => ({
           ...expense,
           category: Object.values(ExpenseCategory).includes(expense.category)
             ? expense.category
@@ -102,22 +140,22 @@ RULES:
       }));
 
       return NextResponse.json(parsedData, { status: 200 });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Groq API error:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to process receipt";
       return NextResponse.json(
         {
           error: "Failed to process receipt",
-          details: error.message,
-          response: error?.response?.data,
+          details: errorMessage,
         },
         { status: 500 }
       );
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error("Server error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error", details: error.message },
-      { status: 500 }
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

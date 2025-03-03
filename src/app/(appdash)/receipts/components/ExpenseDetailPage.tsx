@@ -35,7 +35,7 @@ export default function ExpenseListTable({ expensesList, refreshData }: Props) {
                     <tbody>
                         {expensesList.map((expense, index) => (
                             <tr
-                                key={expense._id || index}
+                                key={index}
                                 className="bg-slate-50 even:bg-slate-100"
                             >
                                 <td className="p-2">{expense.amount}</td>

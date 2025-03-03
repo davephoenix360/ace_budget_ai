@@ -2,11 +2,8 @@ import {
   createBlankReceipt,
   createReceiptFromExtractedJSON,
 } from "@/firebase/helpers/createReceipt";
-import Link from "next/link";
-import { NextResponse } from "next/server";
 import React, { useState } from "react";
 import Tesseract from "tesseract.js";
-import { ExpenseCategory } from "@/firebase/models/expense"; // Adjust path if needed
 
 interface Props {
   userId: string;

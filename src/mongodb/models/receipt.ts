@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { IExpense } from "./Expense"; // Assuming Expense model is in same directory
 
 export interface IReceipt extends Document {
   userId: mongoose.Types.ObjectId;

@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const gmail = google.gmail({ version: "v1", auth: oauth2Client });
     const response = await gmail.users.messages.list({
       userId: "me",
-      maxResults: 100,
+      maxResults: 30,
     });
 
     const messages = response.data.messages || [];

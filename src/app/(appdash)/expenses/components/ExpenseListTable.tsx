@@ -65,7 +65,7 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
               <th className="p-2 font-bold text-left">Description</th>
               <th className="p-2 font-bold text-left">Category</th>
               <th className="p-2 font-bold text-left">Date</th>
-              <th className="p-2 font-bold text-left">Receipt</th>
+              {/* <th className="p-2 font-bold text-left">Receipt</th> */}
               <th className="p-2 font-bold text-left">Actions</th>
             </tr>
           </thead>
@@ -81,7 +81,7 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
                 <td className="p-2">{expense.description}</td>
                 <td className="p-2">{expense.category}</td>
                 <td className="p-2">{new Date(expense.date.seconds * 1000).toISOString()}</td>
-                <td className="p-2">
+                {/* <td className="p-2">
                   <a
                     href={expense.receiptUrl}
                     target="_blank"
@@ -90,7 +90,7 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
                   >
                     View Receipt
                   </a>
-                </td>
+                </td> */}
                 <td className="p-2">
                   <div>
                     <button

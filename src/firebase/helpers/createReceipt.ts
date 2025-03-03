@@ -64,6 +64,7 @@ export async function createReceiptFromExtractedJSON(
         userId: userId,
         receiptId: receiptId,
         ...expense,
+        date: new Date(expense.date) || new Date(),
         receiptUrl: receiptUrl,
         createdAt: new Date(),
         updatedAt: new Date(),

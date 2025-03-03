@@ -2,7 +2,6 @@
 import { IExpense } from "@/mongodb/models/expense";
 import React from "react";
 import { toast } from "sonner";
-import Link from "next/link";
 
 type Props = {
     expensesList: IExpense[];

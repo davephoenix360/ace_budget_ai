@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import {
   ResponsiveContainer,
@@ -71,84 +71,7 @@ export default function AnalysisPage() {
     "#FF4F81",
   ];
 
-  useEffect(() => {
-    if (user) {
-      fetchAnalysisData(timeRange);
-    }
-  }, [user, timeRange]);
-
-  const generateSimulatedExpenses = (range: TimeRange): ExpenseData[] => {
-    const data: ExpenseData[] = [];
-    const now = new Date();
-
-    switch (range) {
-      case "weekly":
-        for (let i = 0; i < 7; i++) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i);
-          data.push({
-            date: date.toISOString().split("T")[0],
-            amount: Math.floor(Math.random() * 100 + 50),
-            category: [
-              "Food & Dining",
-              "Transportation",
-              "Utilities & Bills",
-              "Entertainment",
-            ][Math.floor(Math.random() * 4)],
-          });
-        }
-        break;
-      case "monthly":
-        for (let i = 0; i < 30; i++) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i);
-          data.push({
-            date: date.toISOString().split("T")[0],
-            amount: Math.floor(Math.random() * 100 + 50),
-            category: [
-              "Food & Dining",
-              "Transportation",
-              "Utilities & Bills",
-              "Rent",
-            ][Math.floor(Math.random() * 4)],
-          });
-        }
-        break;
-      case "quarterly":
-        for (let i = 0; i < 90; i++) {
-          const date = new Date(now);
-          date.setDate(date.getDate() - i);
-          data.push({
-            date: date.toISOString().split("T")[0],
-            amount: Math.floor(Math.random() * 100 + 50),
-            category: [
-              "Food & Dining",
-              "Transportation",
-              "Utilities & Bills",
-              "Rent",
-            ][Math.floor(Math.random() * 4)],
-          });
-        }
-        break;
-      case "yearly":
-        for (let i = 0; i < 12; i++) {
-          const date = new Date(now);
-          date.setMonth(date.getMonth() - i);
-          date.setDate(1);
-          data.push({
-            date: date.toISOString().split("T")[0],
-            amount: Math.floor(Math.random() * 500 + 500),
-            category: ["Rent", "Utilities & Bills", "Insurance", "Savings"][
-              Math.floor(Math.random() * 4)
-            ],
-          });
-        }
-        break;
-    }
-    return data;
-  };
-
-  async function fetchAnalysisData(range: TimeRange) {
+  const fetchAnalysisData = useCallback(async (range: TimeRange) => {
     setLoading(true);
     // Simulate a delay (e.g., 2000ms or 2 seconds)
     await delay(2000);
@@ -228,7 +151,166 @@ export default function AnalysisPage() {
 
     setRecommendations(recommendations);
     setLoading(false);
-  }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchAnalysisData(timeRange);
+    }
+  }, [user, timeRange, fetchAnalysisData]);
+
+  const generateSimulatedExpenses = (range: TimeRange): ExpenseData[] => {
+    const data: ExpenseData[] = [];
+    const now = new Date();
+
+    switch (range) {
+      case "weekly":
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          data.push({
+            date: date.toISOString().split("T")[0],
+            amount: Math.floor(Math.random() * 100 + 50),
+            category: [
+              "Food & Dining",
+              "Transportation",
+              "Utilities & Bills",
+              "Entertainment",
+            ][Math.floor(Math.random() * 4)],
+          });
+        }
+        break;
+      case "monthly":
+        for (let i = 0; i < 30; i++) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          data.push({
+            date: date.toISOString().split("T")[0],
+            amount: Math.floor(Math.random() * 100 + 50),
+            category: [
+              "Food & Dining",
+              "Transportation",
+              "Utilities & Bills",
+              "Rent",
+            ][Math.floor(Math.random() * 4)],
+          });
+        }
+        break;
+      case "quarterly":
+        for (let i = 0; i < 90; i++) {
+          const date = new Date(now);
+          date.setDate(date.getDate() - i);
+          data.push({
+            date: date.toISOString().split("T")[0],
+            amount: Math.floor(Math.random() * 100 + 50),
+            category: [
+              "Food & Dining",
+              "Transportation",
+              "Utilities & Bills",
+              "Rent",
+            ][Math.floor(Math.random() * 4)],
+          });
+        }
+        break;
+      case "yearly":
+        for (let i = 0; i < 12; i++) {
+          const date = new Date(now);
+          date.setMonth(date.getMonth() - i);
+          date.setDate(1);
+          data.push({
+            date: date.toISOString().split("T")[0],
+            amount: Math.floor(Math.random() * 500 + 500),
+            category: ["Rent", "Utilities & Bills", "Insurance", "Savings"][
+              Math.floor(Math.random() * 4)
+            ],
+          });
+        }
+        break;
+    }
+    return data;
+  };
+
+  /*  async function fetchAnalysisData(range: TimeRange) {
+    setLoading(true);
+    // Simulate a delay (e.g., 2000ms or 2 seconds)
+    await delay(2000);
+
+    const simulatedExpenses = generateSimulatedExpenses(range);
+    setExpenses(simulatedExpenses);
+
+    const catTotals: Record<string, number> = {};
+    simulatedExpenses.forEach((exp) => {
+      catTotals[exp.category] = (catTotals[exp.category] || 0) + exp.amount;
+    });
+    const sortedCategories = Object.entries(catTotals).sort(
+      (a, b) => b[1] - a[1]
+    );
+    const topCategory = sortedCategories[0]?.[0] || "your spending";
+
+    const totalExpenses = simulatedExpenses.reduce(
+      (sum, exp) => sum + exp.amount,
+      0
+    );
+    let monthlyAverage = 0;
+
+    switch (range) {
+      case "weekly":
+        monthlyAverage = totalExpenses * 4;
+        break;
+      case "monthly":
+        monthlyAverage = totalExpenses;
+        break;
+      case "quarterly":
+        monthlyAverage = totalExpenses / 3;
+        break;
+      case "yearly":
+        monthlyAverage = totalExpenses / 12;
+        break;
+    }
+
+    const nextMonthExpense = monthlyAverage * 1.1;
+    const budgetLimit = monthlyAverage * 0.9;
+    const difference = nextMonthExpense - budgetLimit;
+
+    setForecast({
+      nextMonthExpense: Math.round(nextMonthExpense),
+      budgetLimit: Math.round(budgetLimit),
+      message: `Based on your ${range} data, you may exceed your budget by $${difference.toFixed(
+        2
+      )} next month.`,
+    });
+
+    const recommendations: Recommendation[] = [];
+    recommendations.push({
+      id: 1,
+      text: `Based on your ${range} data, focus on reducing ${topCategory} expenses.`,
+    });
+
+    if (range === "weekly") {
+      recommendations.push({
+        id: 2,
+        text: "Track daily spending to stay within your weekly budget.",
+      });
+    } else if (range === "monthly") {
+      recommendations.push({
+        id: 3,
+        text: "Review monthly subscriptions for potential savings.",
+      });
+    } else if (range === "quarterly") {
+      recommendations.push({
+        id: 4,
+        text: "Plan for upcoming quarterly expenses to avoid overspending.",
+      });
+    } else if (range === "yearly") {
+      recommendations.push({
+        id: 5,
+        text: "Consider annual contract reviews for better rates.",
+      });
+    }
+
+    setRecommendations(recommendations);
+    setLoading(false);
+  } */
 
   useEffect(() => {
     if (expenses.length === 0) return;
@@ -286,7 +368,7 @@ export default function AnalysisPage() {
         <div className="bg-white rounded-lg p-4 shadow">
           <h2 className="text-xl font-semibold mb-2">Budget Forecast</h2>
           <p>
-            <span className="font-medium">Next Month's Expense:</span> $
+            <span className="font-medium">Next Month&apos;s Expense:</span> $
             {forecast.nextMonthExpense}
           </p>
           <p>

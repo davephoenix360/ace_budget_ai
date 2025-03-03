@@ -24,10 +24,12 @@ export async function GET(request: Request) {
 
     const expenses = await getExpensesByUserAndReceipt(clerkId, receiptId);
     return NextResponse.json(expenses);
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error fetching expenses:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to fetch expenses", details: error.message },
+      { error: "Failed to fetch expenses", details: errorMessage },
       { status: 500 }
     );
   }
@@ -38,12 +40,10 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     if (!body.clerkId) {
-      return NextResponse.json(
-        { error: "clerkId is required", status: 400 }
-      );
+      return NextResponse.json({ error: "clerkId is required", status: 400 });
     }
 
-  const expenseData = {
+    const expenseData = {
       userId: body.clerkId,
       amount: parseFloat(body.amount),
       description: body.description.trim(),
@@ -55,11 +55,10 @@ export async function POST(request: Request) {
 
     const newExpense = await createExpense(expenseData);
     return NextResponse.json(newExpense, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error creating expense:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to create expense" },
-      { status: 500 }
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to create expense";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

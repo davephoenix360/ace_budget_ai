@@ -4,11 +4,13 @@ import { NextResponse } from "next/server";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params; // Unwrap the Promise
+
     // Find the receipt by ID
-    const docRef = doc(firestoredb, "receipts", params.id);
+    const docRef = doc(firestoredb, "receipts", id);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {
@@ -41,11 +43,13 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params; // Unwrap the Promise
+
     // Find the receipt by ID
-    const docRef = doc(firestoredb, "receipts", params.id);
+    const docRef = doc(firestoredb, "receipts", id);
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {

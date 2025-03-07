@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
-import Ajv from "ajv";
 import { ExpenseCategory } from "@/firebase/schemas/expensecategories";
-import { IExpense } from "@/firebase/schemas/expense";
 
 interface IParsedData {
-  receipts: {
-    total: number;
-    expenses: IExpense[];
-  }[];
+  receipts: IReceipt[];
 }
 
 interface IReceipt {
@@ -16,33 +11,16 @@ interface IReceipt {
   expenses: IExpense[];
 }
 
-// interface IExpense {
-//   amount: number;
-//   description: string;
-//   category: ExpenseCategory;
-//   date: string;
-// }
+interface IExpense {
+  amount: number;
+  description: string;
+  category: ExpenseCategory;
+  date: string;
+}
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
-
-const ajv = new Ajv();
-
-// Same JSON schema as before (keep your validation)
-const receiptSchema = {
-  total: Number,
-  expenses: [
-    {
-      amount: Number,
-      description: String,
-      category: {
-        enum: Object.values(ExpenseCategory),
-      },
-      date: { type: "string", format: "date-time" },
-    },
-  ],
-};
 
 export async function POST(req: NextRequest) {
   try {
@@ -111,11 +89,34 @@ RULES:
       // Clean and parse
       const cleanedJson = jsonString.replace(/```json|```/g, "").trim();
       const parsedData: IParsedData = JSON.parse(cleanedJson);
+      console.log("Parsed data:", parsedData);
 
-      // Validate schema
-      const validate = ajv.compile(receiptSchema);
-      if (!validate(parsedData)) {
-        console.error("Validation errors:", validate.errors);
+      // Manually validate the schema
+      let validated = true;
+      if (parsedData.receipts) {
+        parsedData.receipts.forEach((receipt) => {
+          if (typeof receipt.total !== "number") {
+            validated = false;
+          }
+          receipt.expenses.forEach((expense) => {
+            if (
+              typeof expense.amount !== "number" ||
+              typeof expense.description !== "string" ||
+              !Object.values(ExpenseCategory).includes(
+                expense.category as ExpenseCategory
+              ) ||
+              isNaN(Date.parse(expense.date))
+            ) {
+              validated = false;
+            }
+          });
+        });
+      } else {
+        validated = false;
+      }
+
+      if (!validated) {
+        console.error("Validation error");
         throw new Error("Invalid schema");
       }
 

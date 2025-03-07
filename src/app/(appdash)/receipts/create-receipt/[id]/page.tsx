@@ -6,6 +6,7 @@ import AddExpense from "../../../expenses/components/AddExpense";
 import { collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { firestoredb } from "@/firebase/config";
 import { Button } from "@/components/ui/button";
+import { IExpense } from "@/firebase/schemas/expense";
 
 function NewReceiptPage({
   params: paramsPromise,
@@ -17,7 +18,7 @@ function NewReceiptPage({
   const { id } = params;
   const receiptId = id;
   const [expensesListIds, setExpensesListIds] = useState<string[]>([]);
-  const [expensesList, setExpensesList] = useState<any[]>([]);
+  const [expensesList, setExpensesList] = useState<IExpense[]>([]);
 
   const addExpenseCallback = (expenseIdAdded: string) => {
     updateExpensesListIdsInStore([...expensesListIds, expenseIdAdded]);

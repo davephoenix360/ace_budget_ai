@@ -1,6 +1,6 @@
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { firestoredb } from "../config";
-import { ExpenseCategory } from "@/mongodb/models/expense"; // Adjust path if needed
+import { ExpenseCategory } from "../schemas/expensecategories";
 
 export async function createReceipt(receiptData: {
   userId: string;

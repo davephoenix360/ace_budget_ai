@@ -2,42 +2,16 @@
 import React, { useEffect, useState } from "react";
 import ExpenseListTable from "./components/ExpenseListTable";
 import { useUser } from "@clerk/nextjs";
+import { IExpense } from "@/firebase/schemas/expense";
 
 // Uncomment the following imports if you enable backend functionality
 // import { db } from "@/utils/dbConfig";
 // import { Budgets, Expenses } from "@/utils/schema";
 // import { desc, eq } from "drizzle-orm";
 
-type IExpense = {
-  id: string;
-  userId: string;
-  receiptId: string;
-  amount: number;
-  description: string;
-  category: string;
-  date: Date;
-  receiptUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
 function ExpensesScreen() {
   const [expensesList, setExpensesList] = useState<IExpense[]>([]);
   const { user } = useUser();
-
-  /*
-    THis is how the IExpense interface looks like:
-    export interface IExpense extends Document {
-        userId: mongoose.Types.ObjectId; 
-        amount: number;
-        description: string;
-        category: string;
-        date: Date;
-        receiptUrl?: string;
-        createdAt: Date;
-        updatedAt: Date;
-    }
-    */
 
   useEffect(() => {
     if (user) {
@@ -69,30 +43,6 @@ function ExpensesScreen() {
         console.error("Error:", error);
       });
 
-    // Front-end only simulation: sample data
-    /* const simulatedResult: IExpense[] = [
-      {
-        _id: 1,
-        userId: "user1",
-        amount: 50,
-        description: "Groceries",
-        category: "Food",
-        date: new Date("2023-02-14"),
-        createdAt: new Date("2023-02-14"),
-        updatedAt: new Date("2023-02-14"),
-      },
-      {
-        _id: 2,
-        userId: "user2",
-        amount: 25,
-        description: "Internet",
-        category: "Utilities",
-        date: new Date("2023-02-15"),
-        createdAt: new Date("2023-02-15"),
-        updatedAt: new Date("2023-02-15"),
-      },
-    ];
-    setExpensesList(simulatedResult); */
   };
 
   return (

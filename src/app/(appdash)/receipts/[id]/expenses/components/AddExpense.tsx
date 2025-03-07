@@ -15,19 +15,6 @@ function AddExpense({ userId }: Props) {
   const [receiptUrl, setReceiptUrl] = useState("");
   const [loading, setLoading] = useState(false);
   console.log(userId);
-  /*
-    This is the IExpense Interface:
-    export interface IExpense extends Document {
-      userId: mongoose.Types.ObjectId; 
-      amount: number;
-      description: string;
-      category: string;
-      date: Date;
-      receiptUrl?: string;
-      createdAt: Date;
-      updatedAt: Date;
-    }   
-    */
 
   /**
    * "Add New Expense" handler.

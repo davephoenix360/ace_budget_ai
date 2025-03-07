@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { IExpense } from "@/firebase/schemas/expense";
 
 // Uncomment the following when enabling backend integration
 // import { db } from "@/utils/dbConfig";
@@ -55,18 +56,6 @@ export default function ExpensesScreen({ params }: ExpensesScreenProps) {
   }
 
   const [budgetInfo, setBudgetInfo] = useState<BudgetInfo | null>(null);
-  type IExpense = {
-    id: string;
-    userId: string;
-    receiptId: string;
-    amount: number;
-    description: string;
-    category: string;
-    date: { nanoseconds: number; seconds: number };
-    receiptUrl?: string;
-    createdAt: { nanoseconds: number; seconds: number };
-    updatedAt: { nanoseconds: number; seconds: number };
-  };
 
   const [expensesList, setExpensesList] = useState<IExpense[]>([]);
   const router = useRouter();

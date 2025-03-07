@@ -2,19 +2,7 @@
 import { NextResponse } from "next/server";
 import React from "react";
 import { toast } from "sonner";
-
-type IExpense = {
-  id: string;
-  userId: string;
-  receiptId: string;
-  amount: number;
-  description: string;
-  category: string;
-  date: Date;
-  receiptUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { IExpense } from "@/firebase/schemas/expense";
 
 type Props = {
   expensesList: IExpense[];
@@ -79,7 +67,7 @@ export default function ExpenseListTable({ expensesList, refreshData }: Props) {
                 <td className="p-2">{expense.amount}</td>
                 <td className="p-2">{expense.description}</td>
                 <td className="p-2">{expense.category}</td>
-                <td className="p-2">{expense.date.toDateString()}</td>
+                <td className="p-2">{expense.date.seconds / 1000}</td>
                 <td className="p-2">
                   <a
                     href={expense.receiptUrl}
@@ -101,8 +89,8 @@ export default function ExpenseListTable({ expensesList, refreshData }: Props) {
                     <button
                         className="p-2 text-blue-500 cursor-pointer hover:text-blue-700 border ml-2"
                         onClick={() => {
-                            console.log(`Updating expense: ${expense._id}`);
-                            return NextResponse.redirect(`localhost:3000/expenses/${expense._id}`);
+                            console.log(`Updating expense: ${expense.id}`);
+                            return NextResponse.redirect(`localhost:3000/expenses/${expense.id}`);
                         }}
                     >
                         Update

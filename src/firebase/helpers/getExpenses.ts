@@ -1,5 +1,13 @@
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { firestoredb } from "@/firebase/config"; // adjust the import path as needed
+import { IExpense } from "@/firebase/schemas/expense"; // adjust the import path as needed
 
 /**
  * Retrieves expenses for a given userId and receiptId.
@@ -37,9 +45,10 @@ export async function getExpensesByUserAndReceipt(
   return expenses;
 }
 
-export async function getExpensesByIds(expenseIds: string[]) {
-  if(expenseIds.length == 0)
-    return []
+export async function getExpensesByIds(
+  expenseIds: string[]
+): Promise<IExpense[]> {
+  if (expenseIds.length == 0) return [];
 
   const expenses = [];
 
@@ -49,9 +58,18 @@ export async function getExpensesByIds(expenseIds: string[]) {
     const expenseDoc = await getDoc(expenseRef);
 
     if (expenseDoc.exists()) {
+      const data = expenseDoc.data();
       expenses.push({
         id: expenseDoc.id,
-        ...expenseDoc.data(),
+        userId: data.userId,
+        receiptId: data.receiptId,
+        amount: data.amount,
+        description: data.description,
+        category: data.category,
+        date: data.date.toDate(),
+        receiptUrl: data.receiptUrl,
+        createdAt: data.createdAt.toDate(),
+        updatedAt: data.updatedAt.toDate(),
       });
     }
   }

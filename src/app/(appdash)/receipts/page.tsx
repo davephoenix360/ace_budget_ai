@@ -22,20 +22,6 @@ export default function ReceiptsScreen() {
   const [receiptList, setReceiptsList] = useState<IReceipt[]>([]);
   const { user } = useUser();
 
-  /*
-      THis is how the IExpense interface looks like:
-      export interface IExpense extends Document {
-          userId: mongoose.Types.ObjectId; 
-          amount: number;
-          description: string;
-          category: string;
-          date: Date;
-          receiptUrl?: string;
-          createdAt: Date;
-          updatedAt: Date;
-      }
-      */
-
   /**
    * Used to get all expenses that belong to the user.
    * Backend code is commented out for front-end-only testing.

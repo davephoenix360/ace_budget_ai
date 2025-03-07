@@ -2,35 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import Ajv from "ajv";
 import { ExpenseCategory } from "@/firebase/schemas/expensecategories";
+import { IExpense } from "@/firebase/schemas/expense";
 
 interface IParsedData {
   receipts: {
     total: number;
-    expenses: {
-      amount: number;
-      description: string;
-      category: ExpenseCategory;
-      date: string;
-    }[];
+    expenses: IExpense[];
   }[];
 }
 
 interface IReceipt {
   total: number;
-  expenses: {
-    amount: number;
-    description: string;
-    category: ExpenseCategory;
-    date: string;
-  }[];
+  expenses: IExpense[];
 }
 
-interface IExpense {
-  amount: number;
-  description: string;
-  category: ExpenseCategory;
-  date: string;
-}
+// interface IExpense {
+//   amount: number;
+//   description: string;
+//   category: ExpenseCategory;
+//   date: string;
+// }
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
@@ -133,9 +124,9 @@ RULES:
         ...receipt,
         expenses: receipt.expenses.map((expense: IExpense) => ({
           ...expense,
-          category: Object.values(ExpenseCategory).includes(expense.category)
-            ? expense.category
-            : ExpenseCategory.OTHER,
+          category: (
+            expense.category as string
+          ).toLowerCase() as ExpenseCategory,
         })),
       }));
 

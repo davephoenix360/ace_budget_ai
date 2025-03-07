@@ -2,27 +2,19 @@
 import { NextResponse } from "next/server";
 import React from "react";
 import { toast } from "sonner";
-
-type IExpense = {
-  id: string;
-  userId: string;
-  receiptId: string;
-  amount: number;
-  description: string;
-  category: string;
-  date: { nanoseconds: number; seconds: number };
-  receiptUrl?: string;
-  createdAt: { nanoseconds: number; seconds: number };
-  updatedAt: { nanoseconds: number; seconds: number };
-};
+import { IExpense } from "../../../../firebase/schemas/expense";
 
 type Props = {
-  expensesListIds: string[] | undefined;
+  expensesListIds?: string[] | undefined;
   expensesList: IExpense[];
   refreshData?: () => void; // Optional callback to refresh parent data
 };
 
-export default function ExpenseListTable({ expensesListIds = [], expensesList, refreshData }: Props) {
+export default function ExpenseListTable({
+  expensesListIds = [],
+  expensesList,
+  refreshData,
+}: Props) {
   /**
    * Front-end placeholder for "delete" operation.
    * Replace this with your real backend or API call.
@@ -54,7 +46,9 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
 
   return (
     <div className="mt-3">
-      <h2 className="font-bold text-lg">{expensesListIds.length == 0 ? "Latest Expenses" : "Expenses"}</h2>
+      <h2 className="font-bold text-lg">
+        {expensesListIds.length == 0 ? "Latest Expenses" : "Expenses"}
+      </h2>
 
       <div className="rounded-xl overflow-hidden mt-3">
         <table className="w-full">
@@ -80,7 +74,9 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
                 <td className="p-2">{expense.amount}</td>
                 <td className="p-2">{expense.description}</td>
                 <td className="p-2">{expense.category}</td>
-                <td className="p-2">{new Date(expense.date.seconds * 1000).toISOString()}</td>
+                <td className="p-2">
+                  {new Date(expense.date.seconds * 1000).toISOString()}
+                </td>
                 {/* <td className="p-2">
                   <a
                     href={expense.receiptUrl}
@@ -103,7 +99,9 @@ export default function ExpenseListTable({ expensesListIds = [], expensesList, r
                       className="p-2 text-blue-500 cursor-pointer hover:text-blue-700 border ml-2"
                       onClick={() => {
                         console.log(`Updating expense: ${expense.id}`);
-                        return NextResponse.redirect(`localhost:3000/expenses/${expense.id}`);
+                        return NextResponse.redirect(
+                          `localhost:3000/expenses/${expense.id}`
+                        );
                       }}
                     >
                       Update

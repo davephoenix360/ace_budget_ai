@@ -2,19 +2,20 @@
 
 import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
-import { ExpenseCategory } from "@/mongodb/models/expense";
+import { ExpenseCategory } from "@/firebase/schemas/expensecategories";
+import { IExpense } from "@/firebase/schemas/expense";
 
 interface ExpenseForm {
   amount: string;
   description: string;
-  category: ExpenseCategory | "";
+  category: string;
   date: string;
   receiptUrl?: string;
 }
 
 export default function ExpensesPage() {
   const { user } = useUser();
-  const [expenses, setExpenses] = useState<any[]>([]);
+  const [expenses, setExpenses] = useState<IExpense[]>([]);
   const [form, setForm] = useState<ExpenseForm>({
     amount: "",
     description: "",
@@ -25,18 +26,6 @@ export default function ExpensesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const fetchExpenses = async () => {
-    try {
-      const res = await fetch(`/api/expenses?clerkId=${user?.id}`);
-      if (!res.ok) throw new Error("Failed to fetch expenses");
-      const data = await res.json();
-      setExpenses(data);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to fetch expenses");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +51,7 @@ export default function ExpensesPage() {
       const result = await res.json();
       setExpenses((prev) =>
         editingId
-          ? prev.map((e) => (e._id === editingId ? result : e))
+          ? prev.map((e) => (e.id === editingId ? result : e))
           : [...prev, result]
       );
       setForm({
@@ -86,7 +75,7 @@ export default function ExpensesPage() {
     try {
       const res = await fetch(`/api/expenses/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete expense");
-      setExpenses((prev) => prev.filter((e) => e._id !== id));
+      setExpenses((prev) => prev.filter((e) => e.id !== id));
     } catch (err) {
       console.error(err);
       setError("Failed to delete expense");
@@ -94,6 +83,17 @@ export default function ExpensesPage() {
   };
 
   useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const res = await fetch(`/api/expenses?clerkId=${user?.id}`);
+        if (!res.ok) throw new Error("Failed to fetch expenses");
+        const data = await res.json();
+        setExpenses(data);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch expenses");
+      }
+    };
     if (user?.id) fetchExpenses();
   }, [user?.id]);
 
@@ -200,7 +200,7 @@ export default function ExpensesPage() {
         <div className="space-y-4">
           {expenses.map((expense) => (
             <div
-              key={expense._id}
+              key={expense.id}
               className="p-4 border rounded-lg bg-white shadow-sm"
             >
               <div className="flex justify-between items-start mb-2">
@@ -210,7 +210,7 @@ export default function ExpensesPage() {
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">
-                    {new Date(expense.date).toLocaleDateString()}
+                    {new Date(expense.date.seconds * 1000).toLocaleDateString()}
                   </p>
                   <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
                     {expense.category}
@@ -220,12 +220,12 @@ export default function ExpensesPage() {
               <div className="flex gap-2 mt-2">
                 <button
                   onClick={() => {
-                    setEditingId(expense._id);
+                    setEditingId(expense.id);
                     setForm({
                       amount: expense.amount.toString(),
                       description: expense.description,
                       category: expense.category,
-                      date: new Date(expense.date).toISOString().split("T")[0],
+                      date: new Date(expense.date.seconds).toISOString().split("T")[0],
                       receiptUrl: expense.receiptUrl,
                     });
                   }}
@@ -234,7 +234,7 @@ export default function ExpensesPage() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(expense._id)}
+                  onClick={() => handleDelete(expense.id)}
                   className="text-red-600 hover:text-red-800 text-sm"
                 >
                   Delete

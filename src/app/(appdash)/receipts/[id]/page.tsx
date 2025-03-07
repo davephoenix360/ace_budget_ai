@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { getExpensesByIds } from "@/firebase/helpers/getExpenses";
 import { collection, doc, getDoc } from "firebase/firestore";
 import { firestoredb } from "@/firebase/config";
+import { IExpense } from "@/firebase/schemas/expense";
 
 export default function ReceiptExpensesPage() {
   // 1. Retrieve dynamic route param `id`
   const { id } = useParams() as { id: string };
   const { user } = useUser();
   const [expensesListIds, setExpensesListIds] = useState<string[]>([]);
-  const [expensesList, setExpensesList] = useState<any[]>([]);
+  const [expensesList, setExpensesList] = useState<IExpense[]>([]);
 
   const getAllExpenses = async (_expensesListIds: string[]) => {
     console.log("Fetching all expenses");
@@ -25,35 +26,35 @@ export default function ReceiptExpensesPage() {
     return expensesByIds;
   };
 
-  const fetchExpensesListIds = async () => {
-    const receiptDocRef = doc(collection(firestoredb, "receipts"), id);
-    const receiptDoc = await getDoc(receiptDocRef);
+  const callOnceAsync = React.useCallback(async () => {
+    const fetchExpensesListIds = async () => {
+      const receiptDocRef = doc(collection(firestoredb, "receipts"), id);
+      const receiptDoc = await getDoc(receiptDocRef);
 
-    if (receiptDoc.exists()) {
-      const receiptData = receiptDoc.data();
-      const expensesList = receiptData.expenses;
+      if (receiptDoc.exists()) {
+        const receiptData = receiptDoc.data();
+        const expensesList = receiptData.expenses;
 
-      if (expensesList) {
-        setExpensesListIds(expensesList);
+        if (expensesList) {
+          setExpensesListIds(expensesList);
+        }
+
+        console.log("Fetched expenses list from receipt, ", expensesList);
+
+        return expensesList;
       }
+    };
 
-      console.log("Fetched expenses list from receipt, ", expensesList);
-
-      return expensesList;
-    }
-  };
-
-  const callOnceAsync = async () => {
     if (user && id) {
       const _expensesListIds = await fetchExpensesListIds();
-      const _expensesById = await getAllExpenses(_expensesListIds);
+      await getAllExpenses(_expensesListIds);
     }
-  };
+  }, [user, id]);
 
   // 3. Simulate fetching expenses for the given `id`
   useEffect(() => {
     callOnceAsync();
-  }, []);
+  }, [callOnceAsync]);
 
   return (
     <div className="p-10 space-y-4">
@@ -63,7 +64,7 @@ export default function ReceiptExpensesPage() {
       <ExpenseListTable
         expensesListIds={expensesListIds}
         expensesList={expensesList}
-        refreshData={getAllExpenses}
+        refreshData={callOnceAsync}
       />
       <div>
         <Button

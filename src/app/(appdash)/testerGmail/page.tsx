@@ -4,7 +4,10 @@
 import { useState } from "react";
 
 export default function DashboardPage() {
-  const [messages, setMessages] = useState<any>(null);
+  const [messages, setMessages] = useState<{
+    snippet: string;
+    body: string;
+  }[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Function to fetch Gmail messages from the API route
@@ -14,8 +17,12 @@ export default function DashboardPage() {
       if (!res.ok) throw new Error("Failed to fetch messages");
       const data = await res.json();
       setMessages(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred");
+      }
     }
   };
 

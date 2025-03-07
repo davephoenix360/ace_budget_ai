@@ -6,11 +6,20 @@ import { google } from "googleapis";
 const TOKEN_COLLECTION = "gmail";
 const TOKEN_DOCUMENT = "token";
 
+export type gmailTokenType = {
+  refresh_token: string | undefined;
+  expiry_date?: number | null;
+  access_token?: string | null;
+  token_type?: string | null;
+  id_token?: string | null;
+  scope?: string;
+};
+
 /**
  * Stores the provided Gmail token object in Firestore.
  * @param token The token object received from the Gmail OAuth callback.
  */
-export async function storeGmailToken(token: any): Promise<void> {
+export async function storeGmailToken(token: gmailTokenType): Promise<void> {
   try {
     await setDoc(doc(firestoredb, TOKEN_COLLECTION, TOKEN_DOCUMENT), token);
     console.log("Gmail token stored successfully.");
@@ -24,14 +33,14 @@ export async function storeGmailToken(token: any): Promise<void> {
  * Fetches the Gmail token stored in Firestore.
  * @returns The token object.
  */
-export async function fetchGmailToken(): Promise<any> {
+export async function fetchGmailToken(): Promise<gmailTokenType> {
   try {
     const tokenDocRef = doc(firestoredb, TOKEN_COLLECTION, TOKEN_DOCUMENT);
     const tokenDoc = await getDoc(tokenDocRef);
     if (!tokenDoc.exists()) {
       throw new Error("No Gmail token found in Firestore.");
     }
-    return tokenDoc.data();
+    return tokenDoc.data() as gmailTokenType;
   } catch (error) {
     console.error("Error fetching Gmail token:", error);
     throw error;

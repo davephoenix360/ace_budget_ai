@@ -7,7 +7,7 @@ import Link from "next/link";
 import UserRegister from "./UserRegister";
 
 function Header() {
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
 
   return (
     <div className="p-5 flex justify-between items-center border shadow-sm">

@@ -75,7 +75,7 @@ export default function ExpenseListTable({
                 <td className="p-2">{expense.description}</td>
                 <td className="p-2">{expense.category}</td>
                 <td className="p-2">
-                  {new Date(expense.date.seconds * 1000).toISOString()}
+                  {new Date(expense.date.seconds * 1000 || 1000).toISOString()}
                 </td>
                 {/* <td className="p-2">
                   <a
